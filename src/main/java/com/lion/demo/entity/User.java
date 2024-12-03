@@ -10,15 +10,16 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
+@Table(name = "users")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Table(name = "users")
 public class User {
 
-    @Id
+    @Id         // primary key
     private String uid;
+
     private String pwd;
     private String uname;
     private String email;
