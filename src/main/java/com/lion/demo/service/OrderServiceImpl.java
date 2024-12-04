@@ -10,24 +10,21 @@ import com.lion.demo.repository.OrderRepository;
 import com.lion.demo.repository.UserRepository;
 import java.time.LocalDateTime;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@RequiredArgsConstructor
 public class OrderServiceImpl implements OrderService {
 
-    @Autowired
-    private BookRepository bookRepository;
+    private final BookRepository bookRepository;
+    private final CartRepository cartRepository;
+    private final OrderRepository orderRepository;
+    private final UserRepository userRepository;
 
-    @Autowired
-    private CartRepository cartRepository;
-
-    @Autowired
-    private OrderRepository orderRepository;
-
-    @Autowired
-    private UserRepository userRepository;
-
+    @Transactional
     @Override
     public Order createOrder(String uid, List<Cart> cartList) {
         User user = userRepository.findById(uid).orElse(null);
@@ -48,6 +45,7 @@ public class OrderServiceImpl implements OrderService {
 
         Order savedOrder = orderRepository.save(order);
         cartRepository.deleteAll(cartList);
+
         return savedOrder;
     }
 
