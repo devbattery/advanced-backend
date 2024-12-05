@@ -25,5 +25,7 @@ public class User {
     private String email;
     private LocalDate regDate;
     private String role;
+    private String provider;
+    private String profileUrl;
 
 }

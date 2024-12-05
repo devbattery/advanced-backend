@@ -5,7 +5,6 @@ import com.lion.demo.service.UserService;
 import jakarta.servlet.http.HttpSession;
 import java.time.LocalDate;
 import java.util.List;
-import lombok.RequiredArgsConstructor;
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -19,10 +18,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 @RequestMapping("/user")
-@RequiredArgsConstructor
 public class UserController {
 
-    private final UserService userService;
+    @Autowired
+    private UserService userService;
 
     @GetMapping("/register")
     public String registerForm() {
@@ -71,12 +70,10 @@ public class UserController {
             String hashedPwd = BCrypt.hashpw(pwd, BCrypt.gensalt());
             user.setPwd(hashedPwd);
         }
-
         user.setUname(uname);
         user.setEmail(email);
         user.setRole(role);
         userService.updateUser(user);
-
         return "redirect:/user/list";
     }
 
@@ -102,10 +99,8 @@ public class UserController {
             msg = "입력한 아이디가 존재하지 않습니다.";
             url = "/user/register";
         }
-
         model.addAttribute("msg", msg);
         model.addAttribute("url", url);
-
         return "common/alertMsg";
     }
 
@@ -120,6 +115,15 @@ public class UserController {
         session.setAttribute("sessUname", user.getUname());
         String msg = user.getUname() + "님 환영합니다.";
         String url = "/mall/list";
+        model.addAttribute("msg", msg);
+        model.addAttribute("url", url);
+        return "common/alertMsg";
+    }
+
+    @GetMapping("/loginFailure")
+    public String loginFailure(Model model) {
+        String msg = "잘못 입력하였습니다.";
+        String url = "/user/login";
         model.addAttribute("msg", msg);
         model.addAttribute("url", url);
         return "common/alertMsg";
