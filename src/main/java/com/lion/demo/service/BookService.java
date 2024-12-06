@@ -2,6 +2,7 @@ package com.lion.demo.service;
 
 import com.lion.demo.entity.Book;
 import java.util.List;
+import org.springframework.data.domain.Page;
 
 public interface BookService {
 
@@ -12,6 +13,8 @@ public interface BookService {
     List<Book> getBooksByPage(int page);
 
     List<Book> getBookList(int page, String field, String query);
+
+    Page<Book> getPagedBooks(int page, String field, String query);
 
     void insertBook(Book book);
 

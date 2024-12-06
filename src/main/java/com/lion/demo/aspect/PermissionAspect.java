@@ -34,7 +34,6 @@ public class PermissionAspect {
         if (!currentUser.getRole().equals(requiredPermission)) {
             throw new SecurityException("권한 부족: " + requiredPermission);
         }
-
         System.out.println("권한 검증 통과: " + joinPoint.getSignature());
     }
 

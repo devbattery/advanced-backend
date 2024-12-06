@@ -3,6 +3,7 @@ package com.lion.demo.service;
 import com.lion.demo.entity.Book;
 import com.lion.demo.repository.BookRepository;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -10,9 +11,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class BookServiceImpl implements BookService {
 
-    @Autowired
     private BookRepository bookRepository;
 
     @Override
@@ -41,6 +42,22 @@ public class BookServiceImpl implements BookService {
             bookPage = bookRepository.findBySummaryContaining(query, pageable);
         }
         return bookPage.getContent();
+    }
+
+    @Override
+    public Page<Book> getPagedBooks(int page, String field, String query) {
+        Pageable pageable = PageRequest.of(page - 1, PAGE_SIZE);
+        Page<Book> bookPage = null;
+        if (field.equals("title")) {
+            bookPage = bookRepository.findByTitleContaining(query, pageable);
+        } else if (field.equals("author")) {
+            bookPage = bookRepository.findByAuthorContaining(query, pageable);
+        } else if (field.equals("company")) {
+            bookPage = bookRepository.findByCompanyContaining(query, pageable);
+        } else {
+            bookPage = bookRepository.findBySummaryContaining(query, pageable);
+        }
+        return bookPage;
     }
 
     @Override
