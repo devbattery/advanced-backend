@@ -26,7 +26,7 @@ public class JwtTokenUtil {
     private String SECRET_KEY = "like_lion_advanced_backend";       // 서버에서만 알고 있는 비밀키
 
     private Claims extractAllClaims(String token) {
-        return Jwts.parser().setSigningKey(SECRET_KEY).build().parseClaimsJwt(token).getBody();
+        return Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJwt(token).getBody();
     }
 
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
