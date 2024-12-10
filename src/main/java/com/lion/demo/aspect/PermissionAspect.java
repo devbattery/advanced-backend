@@ -3,20 +3,20 @@ package com.lion.demo.aspect;
 import com.lion.demo.entity.User;
 import com.lion.demo.service.UserService;
 import jakarta.servlet.http.HttpSession;
-import lombok.RequiredArgsConstructor;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 @Aspect
 @Component
-@RequiredArgsConstructor
 public class PermissionAspect {
 
-    private final UserService userService;
+    @Autowired
+    private UserService userService;
 
     @Before("@annotation(checkPermission)")
     public void checkPermission(JoinPoint joinPoint, CheckPermission checkPermission) throws IllegalAccessException {

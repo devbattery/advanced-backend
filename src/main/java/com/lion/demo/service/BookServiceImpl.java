@@ -3,17 +3,17 @@ package com.lion.demo.service;
 import com.lion.demo.entity.Book;
 import com.lion.demo.repository.BookRepository;
 import java.util.List;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
-@RequiredArgsConstructor
 public class BookServiceImpl implements BookService {
 
-    private final BookRepository bookRepository;
+    @Autowired
+    private BookRepository bookRepository;
 
     @Override
     public Book findByBid(long bid) {

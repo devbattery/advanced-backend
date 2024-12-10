@@ -6,7 +6,7 @@ import com.lion.demo.service.CsvFileReaderService;
 import jakarta.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.List;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,11 +18,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 @RequestMapping("/book")
-@RequiredArgsConstructor
 public class BookController {
 
-    private final CsvFileReaderService csvFileReaderService;
-    private final BookService bookService;
+    @Autowired
+    private CsvFileReaderService csvFileReaderService;
+
+    @Autowired
+    private BookService bookService;
 
     @GetMapping("/list")
     public String list(@RequestParam(name = "p", defaultValue = "1") int page,
@@ -57,7 +59,7 @@ public class BookController {
                          @RequestParam(name = "q", defaultValue = "") String query,
                          Model model) {
         Book book = bookService.findByBid(bid);
-        if (!query.isEmpty()) {
+        if (!query.equals("")) {
             String highlightedSummary = book.getSummary()
                     .replaceAll(query, "<span style='background-color: skyblue;'>" + query + "</span>");
             book.setSummary(highlightedSummary);

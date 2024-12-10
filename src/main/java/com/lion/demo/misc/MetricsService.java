@@ -1,14 +1,14 @@
 package com.lion.demo.misc;
 
 import io.micrometer.core.instrument.MeterRegistry;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-@RequiredArgsConstructor
 public class MetricsService {
 
-    private final MeterRegistry meterRegistry;
+    @Autowired
+    private MeterRegistry meterRegistry;
 
     public void recordCustomMetrics() {
         // Counter example

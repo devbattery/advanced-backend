@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,19 +24,25 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 @RequestMapping("/order")
-@RequiredArgsConstructor
 public class OrderController {
 
-    private final BookService bookService;
-    private final CartService cartService;
-    private final OrderService orderService;
-    private final UserService userService;
+    @Autowired
+    private BookService bookService;
+
+    @Autowired
+    private CartService cartService;
+
+    @Autowired
+    private OrderService orderService;
+
+    @Autowired
+    private UserService userService;
 
     @GetMapping("/createOrder")
     public String createOrder(HttpSession session) {
         String uid = (String) session.getAttribute("sessUid");
         List<Cart> cartList = cartService.getCartItemsByUser(uid);
-        if (!cartList.isEmpty()) {
+        if (cartList.size() != 0) {
             Order order = orderService.createOrder(uid, cartList);
         }
         return "redirect:/order/list";

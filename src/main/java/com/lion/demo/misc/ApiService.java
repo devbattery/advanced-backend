@@ -1,15 +1,15 @@
 package com.lion.demo.misc;
 
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 @Service
-@RequiredArgsConstructor
 public class ApiService {
 
-    private final RestTemplate restTemplate;
+    @Autowired
+    private RestTemplate restTemplate;
 
     public String fetchData() {
         String url = "https://jsonplaceholder.typicode.com/posts/1";

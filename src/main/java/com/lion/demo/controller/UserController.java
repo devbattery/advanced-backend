@@ -5,7 +5,6 @@ import com.lion.demo.service.UserService;
 import jakarta.servlet.http.HttpSession;
 import java.time.LocalDate;
 import java.util.List;
-import lombok.RequiredArgsConstructor;
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -19,10 +18,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 @RequestMapping("/user")
-@RequiredArgsConstructor
 public class UserController {
 
-    private final UserService userService;
+    @Autowired
+    private UserService userService;
 
     @GetMapping("/register")
     public String registerForm() {

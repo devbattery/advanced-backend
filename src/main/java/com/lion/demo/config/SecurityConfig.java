@@ -2,29 +2,28 @@ package com.lion.demo.config;
 
 import com.lion.demo.security.JwtRequestFilter;
 import com.lion.demo.security.MyOAuth2UserService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer.FrameOptionsConfig;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 
 @Configuration
-@RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final AuthenticationFailureHandler failureHandler;
-    private final MyOAuth2UserService myOAuth2UserService;
+    @Autowired
+    private AuthenticationFailureHandler failureHandler;
+
+    @Autowired
+    private MyOAuth2UserService myOAuth2UserService;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.csrf(AbstractHttpConfigurer::disable)       // CSRF 방어 기능 비활성화
-                .headers(x -> x.frameOptions(FrameOptionsConfig::disable))     // H2-console
+        http.csrf(auth -> auth.disable())       // CSRF 방어 기능 비활성화
+                .headers(x -> x.frameOptions(y -> y.disable()))     // H2-console
                 .authorizeHttpRequests(requests -> requests
                         .requestMatchers("/book/list", "/book/detail/**", "/misc/**", "/actuator/**",
                                 "/websocket/**", "/echo", "/personal",
