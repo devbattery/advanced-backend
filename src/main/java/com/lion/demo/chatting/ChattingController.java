@@ -4,15 +4,21 @@ import com.lion.demo.entity.User;
 import com.lion.demo.service.UserService;
 import com.lion.demo.util.TimeUtil;
 import jakarta.servlet.http.HttpSession;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -30,6 +36,9 @@ public class ChattingController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private ChattingWebSocketHandler webSocketHandler;
 
     @Autowired
     private TimeUtil timeUtil;
@@ -79,6 +88,62 @@ public class ChattingController {
         User friend = userService.findByUid(friendUid);
         recipientService.insertFriend(user, friend);
         return "";
+    }
+
+    @GetMapping("/chat/{uid}")
+    public String chat(@PathVariable String uid, HttpSession session, Model model) {
+        String sessUid = (String) session.getAttribute("sessUid");
+        User user = userService.findByUid(sessUid);
+        User friend = userService.findByUid(uid);
+
+        model.addAttribute("user", user);
+        model.addAttribute("friend", friend);
+        return "chatting/chat";
+    }
+
+    @GetMapping("/getChatItems")
+    @ResponseBody
+    public ResponseEntity<Map<String, List<ChatItem>>> getChatItems(
+            @RequestParam("userId") String userId, @RequestParam("recipientId") String recipientId
+    ) {
+        User user = userService.findByUid(userId);
+        User friend = userService.findByUid(recipientId);
+        Map<String, List<ChatMessage>> map = chatMessageService.getChatMessagesByDate(userId, recipientId);
+
+        Map<String, List<ChatItem>> chatItemsByDate = new LinkedHashMap<>();
+        for (Map.Entry<String, List<ChatMessage>> entry : map.entrySet()) {
+            String key = entry.getKey();
+            List<ChatItem> list = new ArrayList<>();
+            for (ChatMessage cm : map.get(key)) {
+                ChatItem chatItem = ChatItem.builder()
+                        .isMine(cm.getSender().getUid().equals(userId) ? 1 : 0)
+                        .message(cm.getMessage())
+                        .timeStr(timeUtil.amPmStr(cm.getTimestamp()))
+                        .hasRead(cm.getHasRead())
+                        .friendUname(friend.getUname())
+                        .friendProfileUrl(friend.getProfileUrl())
+                        .build();
+                list.add(chatItem);
+            }
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd (E)", Locale.KOREAN);
+            String date = LocalDate.parse(key).format(formatter);
+            chatItemsByDate.put(date, list);
+        }
+        return ResponseEntity.ok(chatItemsByDate);
+    }
+
+    @PostMapping("/insert")
+    @ResponseBody
+    public String insert(String senderUid, String recipientUid, String message) {
+        User sender = userService.findByUid(senderUid);
+        User recipient = userService.findByUid(recipientUid);
+        ChatMessage chatMessage = ChatMessage.builder()
+                .sender(sender).recipient(recipient).message(message)
+                .timestamp(LocalDateTime.now())
+                .hasRead(webSocketHandler.isReadable(senderUid, recipientUid))
+                .build();
+        chatMessageService.insertChatMessage(chatMessage);
+        return "ok";
     }
 
     @GetMapping("/mock")
